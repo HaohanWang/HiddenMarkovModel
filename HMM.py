@@ -9,6 +9,8 @@ def getHMM():
 	for i in symbol:
 		emiA[i]=0.0
 		emiB[i]=0.0
+	emiA['space']=0.0
+	emiB['space']=0.0
 	getA = n.getAProb()
 	getB = n.getBProb()
 	getT = n.getTrans()

@@ -14,8 +14,8 @@ def getBProb():
 	return dic
 def getTrans():
 	dic = {}
-	dic["aa"]=0.3
-	dic["ab"]=0.7
-	dic["bb"]=0.7
-	dic["ba"]=0.3
+	dic[00]=0.3
+	dic[01]=0.7
+	dic[11]=0.7
+	dic[10]=0.3
 	return dic
