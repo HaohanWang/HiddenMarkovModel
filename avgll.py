@@ -6,15 +6,41 @@ symbol = 'abcdefghijklmnopqrstuvwxyz '
 
 hmm=HMM.getHMM()
 
-def getLikeliHood(a, b, t, scale, direction):
-	#global scale
-	c = a*b
-	if c>=10e-6:
+#def getLikeliHood(a, b, t, scale, k, direction):
+#	#global scale
+#	c = a*b
+#	if c>=10e-6 or c==0.0:
+#		scale[t][k]=scale[t-direction][k]
+#		return c
+#	else:
+#		scale[t][k]=scale[t-direction][k]+1
+#		c*=10e6
+#		return c
+def multiplyProbability(a, b):
+	c = [1, 1]
+	c[0]=a[0]*b[0]
+	c[1]=a[1]+b[1]
+	if c[0]>=10e-6 or c==0.0:
 		return c
 	else:
-		scale[t]=scale[t-direction]+1
-		c*=10e6
+		c[1]+=1
+		c[0]*=10e6
 		return c
+def addProbability(a, b):
+	c = [1, 1]
+	if a[1]==b[1]:
+		c[0]=a[0]+b[0]
+		c[1]=a[1]
+		return c
+	elif a[0]==0:
+		return b
+	elif b[0]==0:
+		return a
+	elif a[1]>b[1]:
+		return b
+	else:
+		return a
+
 def getTransitionProbability(i, j, hmm):
 	key = 10*i+j
 	return hmm[2][key]
@@ -24,48 +50,55 @@ def getEmissionProbability(s, c, hmm):
 	return hmm[s][c]
 
 def forward(data, hmm):
-	alpha = [[1,0]]
+	alpha = [[[1,0],[0,0]]]
 	t = 0
-	scale = [0]
 	for c in data:
 		t+=1
-		alpha.append([0,0])
-		scale.append(1)
+		alpha.append([[0, 0],[0, 0]])
 		for j in range(0, 2):
-			sumj = 0.0
+			sumj = [0.0, 0]
 			for i in range(0,2):
-				sumj+=alpha[t-1][i]*getTransitionProbability(i, j, hmm)
-			prob = getLikeliHood(sumj,getEmissionProbability(j, c, hmm), t, scale, 1)
+				ptrans = [getTransitionProbability(i, j, hmm), 0]
+				sumj = addProbability(sumj, multiplyProbability(alpha[t-1][i], ptrans))
+			pemit = [getEmissionProbability(j, c, hmm), 0]
+			prob = multiplyProbability(sumj, pemit)
+#			print prob 
 			alpha[t][j]=prob
-			#print scale[t]
-	return (alpha, scale) 
+#		print alpha[t]
+		#print scale[t]
+	return alpha 
 def backward(data, hmm):
-	beta = [[0, 0]]
-	scale = [1]
-	for k in range(len(data)):
-		beta.append([0,0])
-		scale.append(1)
-	beta.append([0, 1])
-	scale.append(1)
-	t = len(beta)-1
-	for k in range(len(data), 0, -1):
-		c=data[k-1]
+	data="#"+data 
+	beta = []
+	for k in range(len(data)-1):
+		beta.append([[0,0],[0,0]])
+	beta.append([[0,0],[1,0]])
+	t = len(data)-1
+	for k in range(len(data), 1, -1):
+#		print t
 		t-=1
+		c=data[t+1]
+		#print t
 		for i in range(1, -1, -1):
-			sumi=0.0
+			sumi=[0.0,0]
 			for j in range(1, -1, -1):
-				temp=beta[t+1][j]*getTransitionProbability(i, j, hmm)
-				sumi += getLikeliHood(temp, getEmissionProbability(j, c, hmm), t, scale, -1)
+				#print str(i)+" "+str(j)+" "+str(c)
+				ptrans=[getTransitionProbability(i, j, hmm),0]
+				temp=multiplyProbability(beta[t+1][j], ptrans)
+				pemit=[getEmissionProbability(j, c, hmm), 0]
+				temp=multiplyProbability(temp, pemit)
+				sumi=addProbability(sumi, temp) 
 			beta[t][i]=sumi
-	return (beta, scale)
-alpha, scale = forward(data, hmm)
+#		print scale[t]
+	return beta
+alpha = forward(data, hmm)
 print alpha[len(data)]
-loglhdf=math.log(alpha[len(data)][1], 2)+math.log(10e-6, 2)*scale[len(data)]
+loglhdf=math.log(alpha[len(data)][1][0], 2)+math.log(10e-6, 2)*alpha[len(data)][1][1]
 avgllf = loglhdf/len(data)
 print avgllf
 
-beta, scale = backward(data, hmm)
-print beta[1]
-loglhdb=math.log(beta[1][0], 2)+math.log(10e-6, 2)*scale[1]
+beta = backward(data, hmm)
+print beta[0]
+loglhdb=math.log(beta[0][0][0], 2)+math.log(10e-6, 2)*beta[0][0][1]
 avgllb = loglhdb/len(data)
 print avgllb
