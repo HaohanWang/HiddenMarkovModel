@@ -6,12 +6,12 @@ hmm = HMM.getHMM()
 data = [line.strip() for line in open("../data/train.txt")][0]
 
 def getXi(data, hmm):
-	alpha, scaleA = a.forward(data, hmm)
-	beta, scaleB = a.forward(data, hmm)
-	likelihood = beta[1][0]
-	xi = [[0,0],[0,0]]
+	alpha = a.forward(data, hmm)
+	beta = a.backward(data, hmm)
+	likelihood=beta[0][0]
+	xi = [[[[0,0],[0,0]],[[0,0],[0,0]]]]
 	for t in range(len(data)):
-		xi.append([[0,0],[0,0]])
+		xi.append([[[0,0],[0,0]],[[0,0],[0,0]]])
 	t = 0
 	for c in data:
 		t+=1
@@ -21,9 +21,28 @@ def getXi(data, hmm):
 				if t<len(data)-1:
 					pemit = a.getEmissionProbability(j, data[t+1], hmm)
 				else:
-					pemit = 0
-				xi[t][i][j]=(alpha[t][i]*prans*pemit*beta[t+1][j])/likelihood
+					pemit = [0, 0]
+				temp = a.multiplyProbability(alpha[t][i], prans)
+				temp = a.multiplyProbability(temp, pemit)
+				temp = a.multiplyProbability(temp, beta[t+1][j])
+				xi[t][i][j]=a.divideProbability(temp, likelihood)
 	return xi
-def reEstimation(xi):
+def reEstimation(xi, data):
 	symbol = 'abcdefghijklmnopqrstuvwxyz '
-
+	emiA = {}
+	emiB = {}
+	trans = {}
+	for i in range(0, 2):
+		demo = [0, 0]
+		for j in range(0, 2):
+			nume = [0, 0]
+			t=0
+			for c in data:
+				t+=1
+				nume=a.addProbability(nume, xi[t, i, j])
+				demo=a.addProbability(nume, xi[t, i, j])
+			trans[i*10+j]=nume
+		for j in range(0, 2):
+			trans[i*10+j]=a.divideProbability(trans[i*10+j], demo)
+	
+		

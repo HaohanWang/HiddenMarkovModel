@@ -4,18 +4,18 @@ def getAProb():
 	dic = {}
 	for line in data1:
 		item = line.split()
-		dic[item[0]]=float(item[1])
+		dic[item[0]]=[float(item[1]),0]
 	return dic
 def getBProb():
 	dic = {}
 	for line in data2:
 		item = line.split()
-		dic[item[0]]=float(item[1])
+		dic[item[0]]=[float(item[1]),0]
 	return dic
 def getTrans():
 	dic = {}
-	dic[00]=0.3
-	dic[01]=0.7
-	dic[11]=0.7
-	dic[10]=0.3
+	dic[00]=[0.3,0]
+	dic[01]=[0.7,0]
+	dic[11]=[0.7,0]
+	dic[10]=[0.3,0]
 	return dic

@@ -40,6 +40,27 @@ def addProbability(a, b):
 		return b
 	else:
 		return a
+def divideProbability(a, b):
+	c = [1, 1]
+	c[0]=a[0]/b[0]
+	c[1]=a[1]-b[1]
+	if c[0]>=10e-6 or c==0.0:
+		return c
+	else:
+		c[1]+=1
+	        c[0]*=10e6
+	        return c
+def compareProbability(a, b):
+	if a[1]>b[1]:
+		return -1
+	elif a[1]<b[1]:
+		return 1
+	elif a[0]<b[0]:
+		return -1
+	elif a[0]>b[0]:
+		return 1
+	else:
+		return 0
 
 def getTransitionProbability(i, j, hmm):
 	key = 10*i+j
@@ -58,9 +79,9 @@ def forward(data, hmm):
 		for j in range(0, 2):
 			sumj = [0.0, 0]
 			for i in range(0,2):
-				ptrans = [getTransitionProbability(i, j, hmm), 0]
+				ptrans = getTransitionProbability(i, j, hmm)
 				sumj = addProbability(sumj, multiplyProbability(alpha[t-1][i], ptrans))
-			pemit = [getEmissionProbability(j, c, hmm), 0]
+			pemit = getEmissionProbability(j, c, hmm)
 			prob = multiplyProbability(sumj, pemit)
 #			print prob 
 			alpha[t][j]=prob
@@ -83,9 +104,9 @@ def backward(data, hmm):
 			sumi=[0.0,0]
 			for j in range(1, -1, -1):
 				#print str(i)+" "+str(j)+" "+str(c)
-				ptrans=[getTransitionProbability(i, j, hmm),0]
+				ptrans=getTransitionProbability(i, j, hmm)
 				temp=multiplyProbability(beta[t+1][j], ptrans)
-				pemit=[getEmissionProbability(j, c, hmm), 0]
+				pemit=getEmissionProbability(j, c, hmm)
 				temp=multiplyProbability(temp, pemit)
 				sumi=addProbability(sumi, temp) 
 			beta[t][i]=sumi
