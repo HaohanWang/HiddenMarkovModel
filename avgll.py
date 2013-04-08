@@ -29,7 +29,12 @@ def multiplyProbability(a, b):
 def addProbability(a, b):
 	if a[1]==b[1]:
 		c = [a[0]+b[0], a[1]]
-		return c
+		if c[0]>=10e-6 or c[0]==0.0:
+			return c
+		else:
+			c[1]+=1
+			c[0]*=10e6
+			return c
 	if a[0]==0:
 		return b
 	if b[0]==0:
@@ -56,6 +61,9 @@ def divideProbability(a, b):
 	c = [1, 1]
 	c[0]=a[0]/b[0]
 	c[1]=a[1]-b[1]
+	if c[0]>10:
+		c[1]-=1
+		c[0]*=10e-6
 	if c[0]>=10e-6 or c[0]==0.0:
 		return c
 	else:
@@ -132,13 +140,14 @@ def getAvgLL(data, hmm):
 	return avgllf
 
 alpha = forward(data, hmm)
-print alpha[len(data)]
+#print alpha[len(data)]
 loglhdf=math.log(alpha[len(data)][1][0], 2)+math.log(10e-6, 2)*alpha[len(data)][1][1]
 avgllf = loglhdf/len(data)
-print avgllf
+#print avgllf
+print getAvgLL(data, hmm)
 
 beta = backward(data, hmm)
-print beta[0]
+#print beta[0]
 loglhdb=math.log(beta[0][0][0], 2)+math.log(10e-6, 2)*beta[0][0][1]
 avgllb = loglhdb/len(data)
-print avgllb
+#print avgllb
