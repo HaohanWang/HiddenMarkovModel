@@ -112,14 +112,21 @@ def backward(data, hmm):
 			beta[t][i]=sumi
 #		print scale[t]
 	return beta
+def getAvgLL(data, hmm):
+	alpha = forward(data, hmm)
+	print alpha[len(data)][1]
+	loglhdf=math.log(alpha[len(data)][1][0], 2)+math.log(10e-6, 2)*alpha[len(data)][1][1]
+	avgllf = loglhdf/len(data)
+	return avgllf
+
 alpha = forward(data, hmm)
-print alpha[len(data)]
+#print alpha[len(data)]
 loglhdf=math.log(alpha[len(data)][1][0], 2)+math.log(10e-6, 2)*alpha[len(data)][1][1]
 avgllf = loglhdf/len(data)
-print avgllf
+#print avgllf
 
 beta = backward(data, hmm)
-print beta[0]
+#print beta[0]
 loglhdb=math.log(beta[0][0][0], 2)+math.log(10e-6, 2)*beta[0][0][1]
 avgllb = loglhdb/len(data)
-print avgllb
+#print avgllb
