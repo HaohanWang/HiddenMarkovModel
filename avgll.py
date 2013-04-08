@@ -20,31 +20,43 @@ def multiplyProbability(a, b):
 	c = [1, 1]
 	c[0]=a[0]*b[0]
 	c[1]=a[1]+b[1]
-	if c[0]>=10e-6 or c==0.0:
+	if c[0]>=10e-6 or c[0]==0.0:
 		return c
 	else:
 		c[1]+=1
 		c[0]*=10e6
 		return c
 def addProbability(a, b):
-	c = [1, 1]
 	if a[1]==b[1]:
-		c[0]=a[0]+b[0]
-		c[1]=a[1]
+		c = [a[0]+b[0], a[1]]
 		return c
-	elif a[0]==0:
+	if a[0]==0:
 		return b
-	elif b[0]==0:
+	if b[0]==0:
 		return a
-	elif a[1]>b[1]:
+	if a[1]-b[1]>=2:
+		return a
+	if b[1]-a[1]>=2:
 		return b
+	if a[1]>b[1]:
+		c=a
+		a=b
+		b=c
+	c=a
+	d=a[1]-b[1]
+	e=[b[0]*pow(10e6, d), a[1]]
+	c[0]=a[0]+e[0]
+	if c[0]>=10e-6 or c[0]==0.0:
+		return c
 	else:
-		return a
+		c[1]+=1
+		c[0]*=10e6
+		return c
 def divideProbability(a, b):
 	c = [1, 1]
 	c[0]=a[0]/b[0]
 	c[1]=a[1]-b[1]
-	if c[0]>=10e-6 or c==0.0:
+	if c[0]>=10e-6 or c[0]==0.0:
 		return c
 	else:
 		c[1]+=1
@@ -114,19 +126,19 @@ def backward(data, hmm):
 	return beta
 def getAvgLL(data, hmm):
 	alpha = forward(data, hmm)
-	print alpha[len(data)][1]
+	#print alpha[len(data)][1]
 	loglhdf=math.log(alpha[len(data)][1][0], 2)+math.log(10e-6, 2)*alpha[len(data)][1][1]
 	avgllf = loglhdf/len(data)
 	return avgllf
 
 alpha = forward(data, hmm)
-#print alpha[len(data)]
+print alpha[len(data)]
 loglhdf=math.log(alpha[len(data)][1][0], 2)+math.log(10e-6, 2)*alpha[len(data)][1][1]
 avgllf = loglhdf/len(data)
-#print avgllf
+print avgllf
 
 beta = backward(data, hmm)
-#print beta[0]
+print beta[0]
 loglhdb=math.log(beta[0][0][0], 2)+math.log(10e-6, 2)*beta[0][0][1]
 avgllb = loglhdb/len(data)
-#print avgllb
+print avgllb
