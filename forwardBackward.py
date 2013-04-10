@@ -57,8 +57,10 @@ def reEstimation(xi, data):
 				nume+=xi[t][i][j]
 				demo+=xi[t][i][j] 
 			trans[i*10+j]=nume
-		for j in range(0, 2):
-			trans[i*10+j]=[trans[i*10+j]/demo, 0]
+#		for j in range(0, 2):
+#			trans[i*10+j]=[trans[i*10+j]/demo, 0]
+		trans[i*10+0]=[trans[i*10+0]/demo, 0]
+		trans[i*10+1]=[1-trans[i*10+0][0], 0]
 	for j in range(0, 2):
 		demo = 0
 		for s in symbol:
@@ -91,6 +93,17 @@ def reEstimation(xi, data):
 					emiB[s]=[emiB[s]/demo, 0]
 				else:
 					emiB['space']=[emiB['space']/demo, 0]
+		if j==0:
+			emiA['space']=[1,0]
+		else:
+			emiB['space']=[1,0]
+		for s in symbol:
+			if j==0:
+				if s!=' ':
+					emiA['space'][0]-=emiA[s][0]
+			else:
+				if s!=' ':
+					emiB['space'][0]-=emiB[s][0]
 	return (emiA, emiB, trans)
 def train(data, hmm):
 	change=1

@@ -10,26 +10,26 @@ data = [line.strip() for line in open("../data/train.txt")][0]
 def getXi(data, hmm):
 	alpha = a.forward(data, hmm)
 	beta = a.backward(data, hmm)
+#	beta.append([(1, 0),(1,0)])
 	likelihood=beta[0][0]
 	xi = [[[[0,0],[0,0]],[[0,0],[0,0]]]]
-	beta.append([[1, 0], [1,0]])
-	for t in range(len(data)):
+	for t in range(len(data)-1):
 		xi.append([[[0,0],[0,0]],[[0,0],[0,0]]])
+#	xi.append([[[0,0],[0,0]],[[0,0],[0,0]]])
+	data = '#'+data	
 	t = 0
-	for h in range(len(data)):
-		t+=1
+	for h in range(len(data)-1):
 		for i in range(0, 2):
 			for j in range(0, 2):
 				ptrans = a.getTransitionProbability(i, j, hmm)
-				if t<len(data)-1:
-					pemit = a.getEmissionProbability(j, data[t+1], hmm)
-				else:
-					pemit = [0, 0]
+				pemit = a.getEmissionProbability(j, data[t+1], hmm)
 				temp = a.multiplyProbability(alpha[t][i], ptrans)
 				temp = a.multiplyProbability(temp, pemit)
 				temp = a.multiplyProbability(temp, beta[t+1][j])
 				xi[t][i][j]=a.divideProbability(temp, likelihood)
 #				xi[t][i][j]=temp
+		t+=1
+#	print xi
 	return xi
 def reEstimation(xi, data):
 	symbol = 'abcdefghijklmnopqrstuvwxyz '
@@ -48,10 +48,10 @@ def reEstimation(xi, data):
 		for j in range(0, 2):
 			nume = [0, 0]
 			t=0
-			for c in data:
-				t+=1
+			for c in range(len(data)):
 				nume=a.addProbability(nume, xi[t][i][j])
 				demo=a.addProbability(demo, xi[t][i][j]) 
+				t+=1
 			trans[i*10+j]=nume
 		for j in range(0, 2):
 			trans[i*10+j]=a.divideProbability(trans[i*10+j], demo)
@@ -61,11 +61,11 @@ def reEstimation(xi, data):
 			nume=[0,0]
 			for i in range(0, 2):
 				t=0
-				for c in data:
-					t+=1
-					if c == s:
+				for c in range(len(data)):
+					if data[t] == s:
 						nume=a.addProbability(nume, xi[t][i][j])
 						demo=a.addProbability(demo, xi[t][i][j])
+					t+=1
 			if j==0:
 				if s!=' ':
 					emiA[s]=nume
@@ -91,7 +91,7 @@ def reEstimation(xi, data):
 def train(data, hmm):
 	change=1
 	Avgll=a.getAvgLL(data, hmm)
-	while change >10e-4:
+	while change >1e-8:
 		avgll=Avgll
 		xi=getXi(data, hmm)
 		hmm=reEstimation(xi, data)
@@ -104,14 +104,14 @@ def train(data, hmm):
 		Avgll=a.getAvgLL(data, hmm)
 		change=(Avgll-avgll)/abs(Avgll)
 		print "---------------"
-		print "new avgll\told avgll"
+		print "current avgll\tformal avgll"
 		print str(Avgll)+"\t"+str(avgll)
 		print "avgll change ratio"
 		print change
 	return hmm
 def run(data):
-	#hmm=r.randomHmm()
-	hmm=HMM.getHMM()
+	hmm=r.randomHmm()
+	#hmm=HMM.getHMM()
 	hmm=train(data, hmm)
 
 run(data)

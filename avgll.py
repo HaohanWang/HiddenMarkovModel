@@ -17,59 +17,70 @@ hmm=HMM.getHMM()
 #		c*=10e6
 #		return c
 def multiplyProbability(a, b):
+	a = tuple(a)
+	b = tuple(b)
 	c = [1, 1]
 	c[0]=a[0]*b[0]
 	c[1]=a[1]+b[1]
-	if c[0]>=10e-6 or c[0]==0.0:
-		return c
+	if c[0]>=1e-6 or c[0]==0.0:
+		return tuple(c)
 	else:
 		c[1]+=1
-		c[0]*=10e6
-		return c
+		c[0]*=1e6
+		return tuple(c)
 def addProbability(a, b):
+	a = tuple(a)
+	b = tuple(b)
 	if a[1]==b[1]:
 		c = [a[0]+b[0], a[1]]
-		if c[0]>=10e-6 or c[0]==0.0:
-			return c
+		if c[0]>=1e-6 or c[0]==0.0:
+			return tuple(c)
 		else:
 			c[1]+=1
-			c[0]*=10e6
-			return c
+			c[0]*=1e6
+			return tuple(c)
 	if a[0]==0:
 		return b
 	if b[0]==0:
 		return a
-	if a[1]-b[1]>=2:
-		return a
-	if b[1]-a[1]>=2:
+	if a[1]-b[1]>=3:
 		return b
+	if b[1]-a[1]>=3:
+		return a
 	if a[1]>b[1]:
-		c=a
-		a=b
-		b=c
-	c=a
-	d=a[1]-b[1]
-	e=[b[0]*pow(10e6, d), a[1]]
-	c[0]=a[0]+e[0]
-	if c[0]>=10e-6 or c[0]==0.0:
-		return c
+		m=b
+		n=a
+	else:
+		m=a
+		n=b
+	c=[1, 1]
+	d=m[1]-n[1]
+	e=[n[0]*pow(1e6, d), m[1]]
+	c[0]=m[0]+e[0]
+	c[1]=m[1]
+	if c[0]>=1e-6 or c[0]==0.0:
+		return tuple(c)
 	else:
 		c[1]+=1
-		c[0]*=10e6
-		return c
+		c[0]*=1e6
+		return tuple(c)
 def divideProbability(a, b):
+	a = tuple(a)
+	b = tuple(b)
 	c = [1, 1]
+	if a[0]==0:
+		return (0, 0)
 	c[0]=a[0]/b[0]
 	c[1]=a[1]-b[1]
-	if c[0]>10:
+	while c[0]>10:
 		c[1]-=1
-		c[0]*=10e-6
-	if c[0]>=10e-6 or c[0]==0.0:
-		return c
+		c[0]*=1e-6
+	if c[0]>=1e-6 or c[0]==0.0:
+		return tuple(c)
 	else:
 		c[1]+=1
-	        c[0]*=10e6
-	        return c
+	        c[0]*=1e6
+	        return tuple(c)
 def compareProbability(a, b):
 	if a[1]>b[1]:
 		return -1
@@ -113,7 +124,7 @@ def backward(data, hmm):
 	beta = []
 	for k in range(len(data)-1):
 		beta.append([[0,0],[0,0]])
-	beta.append([[0,0],[1,0]])
+	beta.append([[1,0],[1,0]])
 	t = len(data)-1
 	for k in range(len(data), 1, -1):
 #		print t
@@ -131,23 +142,25 @@ def backward(data, hmm):
 				sumi=addProbability(sumi, temp) 
 			beta[t][i]=sumi
 #		print scale[t]
+	data = data[1:]
 	return beta
 def getAvgLL(data, hmm):
 	alpha = forward(data, hmm)
 	#print alpha[len(data)][1]
-	loglhdf=math.log(alpha[len(data)][1][0], 2)+math.log(10e-6, 2)*alpha[len(data)][1][1]
+	loglhdf=math.log(alpha[len(data)][1][0], 2)+math.log(1e-6, 2)*alpha[len(data)][1][1]
 	avgllf = loglhdf/len(data)
 	return avgllf
 
 alpha = forward(data, hmm)
 #print alpha[len(data)]
-loglhdf=math.log(alpha[len(data)][1][0], 2)+math.log(10e-6, 2)*alpha[len(data)][1][1]
+loglhdf=math.log(alpha[len(data)][1][0], 2)+math.log(1e-6, 2)*alpha[len(data)][1][1]
 avgllf = loglhdf/len(data)
 #print avgllf
-print getAvgLL(data, hmm)
+#print getAvgLL(data, hmm)
+#print len(data)
 
 beta = backward(data, hmm)
 #print beta[0]
-loglhdb=math.log(beta[0][0][0], 2)+math.log(10e-6, 2)*beta[0][0][1]
+loglhdb=math.log(beta[0][0][0], 2)+math.log(1e-6, 2)*beta[0][0][1]
 avgllb = loglhdb/len(data)
 #print avgllb

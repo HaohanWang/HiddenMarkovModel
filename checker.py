@@ -25,7 +25,7 @@ def checkHmm(hmm):
 	return True
 	
 def checkProbability(p):
-	if round(p[0], 1)==1 and p[1]==0:
+	if round(p[0], 4)==1 and p[1]==0:
 		return True
 	else:
 		return False
