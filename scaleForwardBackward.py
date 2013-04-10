@@ -10,12 +10,10 @@ data = [line.strip() for line in open("../data/train.txt")][0]
 def getXi(data, hmm):
 	alpha = a.forward(data, hmm)
 	beta = a.backward(data, hmm)
-#	beta.append([(1, 0),(1,0)])
 	likelihood=beta[0][0]
 	xi = [[[[0,0],[0,0]],[[0,0],[0,0]]]]
 	for t in range(len(data)-1):
 		xi.append([[[0,0],[0,0]],[[0,0],[0,0]]])
-#	xi.append([[[0,0],[0,0]],[[0,0],[0,0]]])
 	data = '#'+data	
 	t = 0
 	for h in range(len(data)-1):
@@ -27,9 +25,7 @@ def getXi(data, hmm):
 				temp = a.multiplyProbability(temp, pemit)
 				temp = a.multiplyProbability(temp, beta[t+1][j])
 				xi[t][i][j]=a.divideProbability(temp, likelihood)
-#				xi[t][i][j]=temp
 		t+=1
-#	print xi
 	return xi
 def reEstimation(xi, data):
 	symbol = 'abcdefghijklmnopqrstuvwxyz '
@@ -91,27 +87,28 @@ def reEstimation(xi, data):
 def train(data, hmm):
 	change=1
 	Avgll=a.getAvgLL(data, hmm)
-	while change >1e-8:
+	while change >1e-7:
 		avgll=Avgll
 		xi=getXi(data, hmm)
 		hmm=reEstimation(xi, data)
-		if checker.checkHmm(hmm)==False:
-			print "$$$$$$$$$$$$$$$"
-			print hmm[0]
-			print hmm[1]
-			print hmm[2]
-			print "$$$$$$$$$$$$$$$"
 		Avgll=a.getAvgLL(data, hmm)
 		change=(Avgll-avgll)/abs(Avgll)
-		print "---------------"
-		print "current avgll\tformal avgll"
-		print str(Avgll)+"\t"+str(avgll)
-		print "avgll change ratio"
-		print change
+		#print "---------------"
+		#print "current avgll\tformal avgll"
+		#print str(Avgll)+"\t"+str(avgll)
+		#print "avgll change ratio"
+		#print change
+	print "-----------------"
+	print Avgll
+	print hmm[0]
+	print hmm[1]
+	print hmm[2]
+	print '-----------------'
 	return hmm
 def run(data):
-	hmm=r.randomHmm()
-	#hmm=HMM.getHMM()
+	#hmm=r.randomHmm()
+	hmm=HMM.getHMM()
 	hmm=train(data, hmm)
 
+#for i in range(10):
 run(data)

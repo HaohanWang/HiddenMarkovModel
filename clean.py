@@ -1,4 +1,4 @@
-text = [line.strip() for line in open("../data/dirty.txt")]
+text = [line.strip() for line in open("../data/dirty1.txt")]
 
 r = ""
 

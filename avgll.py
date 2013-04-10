@@ -1,10 +1,13 @@
 import HMM
+import bestHMM 
 import math
 
-data = [line.strip() for line in open("../data/train.txt")][0]
+data = [line.strip() for line in open("../data/test1.txt")][0]
 symbol = 'abcdefghijklmnopqrstuvwxyz '
 
-hmm=HMM.getHMM()
+#hmm=HMM.getHMM()
+hmm=bestHMM.getHMM()
+#print hmm
 
 #def getLikeliHood(a, b, t, scale, k, direction):
 #	#global scale
@@ -156,7 +159,7 @@ alpha = forward(data, hmm)
 loglhdf=math.log(alpha[len(data)][1][0], 2)+math.log(1e-6, 2)*alpha[len(data)][1][1]
 avgllf = loglhdf/len(data)
 #print avgllf
-#print getAvgLL(data, hmm)
+print getAvgLL(data, hmm)
 #print len(data)
 
 beta = backward(data, hmm)
