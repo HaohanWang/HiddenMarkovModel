@@ -1,4 +1,8 @@
-text = [line.strip() for line in open("../data/dirty1.txt")]
+import sys
+
+f = sys.argv[1]
+
+text = [line.strip() for line in open("../data/"+f)]
 
 r = ""
 

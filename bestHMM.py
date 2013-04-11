@@ -1,5 +1,6 @@
+import operator
 def getHMM():
-	text = [line.strip() for line in open("../data/r.txt")]
+	text = [line.strip() for line in open("../data/t.txt")]
 	symbol = 'abcdefghijklmnopqrstuvwxyz '
 	emiA = {}
 	emiB = {}
@@ -25,6 +26,10 @@ def getHMM():
 	for item in probT:
 		it = item[1:].split(":")
 		trans[int(it[0])]=getProbability(it[1])
+#	Alist = sorted(emiA.iteritems(), key=operator.itemgetter(1))
+#	Blist = sorted(emiB.iteritems(), key=operator.itemgetter(1))
+#	print Alist
+#	print Blist
 	return (emiA, emiB, trans)
 		
 

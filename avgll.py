@@ -2,23 +2,13 @@ import HMM
 import bestHMM 
 import math
 
-data = [line.strip() for line in open("../data/test1.txt")][0]
+data = [line.strip() for line in open("../data/test2.txt")][0]
 symbol = 'abcdefghijklmnopqrstuvwxyz '
 
 #hmm=HMM.getHMM()
 hmm=bestHMM.getHMM()
 #print hmm
 
-#def getLikeliHood(a, b, t, scale, k, direction):
-#	#global scale
-#	c = a*b
-#	if c>=10e-6 or c==0.0:
-#		scale[t][k]=scale[t-direction][k]
-#		return c
-#	else:
-#		scale[t][k]=scale[t-direction][k]+1
-#		c*=10e6
-#		return c
 def multiplyProbability(a, b):
 	a = tuple(a)
 	b = tuple(b)
@@ -84,17 +74,47 @@ def divideProbability(a, b):
 		c[1]+=1
 	        c[0]*=1e6
 	        return tuple(c)
-def compareProbability(a, b):
-	if a[1]>b[1]:
-		return -1
-	elif a[1]<b[1]:
-		return 1
-	elif a[0]<b[0]:
-		return -1
-	elif a[0]>b[0]:
-		return 1
+
+def getMaxProbability(a, b):
+	if a[1]==b[1]:
+		if a[0]>b[0]:
+			return a
+		else:
+			return b
+	elif a[1]-b[1]>=3:
+		return b
+	elif b[1]-a[1]>=3:
+		return a
+	elif a[1]>b[1]:
+		if a[0]*pow(1e-6, a[1]-b[1])>b[0]:
+			return a
+		else:
+			return b
 	else:
-		return 0
+		if b[0]*pow(1e-6, b[1]-a[1])>a[0]:
+			return b
+		else:
+			return a
+def compareProbability(a, b):
+	if a[1]==b[1]:
+		if a[0]>b[0]:
+			return 1
+		else:
+			return -1
+	elif a[1]-b[1]>=3:
+		return -1
+	elif b[1]-a[1]>=3:
+		return 1
+	elif a[1]>b[1]:
+		if a[0]*pow(1e-6, a[1]-b[1])>b[0]:
+			return 1
+		else:
+			return -1
+	else:
+		if b[0]*pow(1e-6, b[1]-a[1])>a[0]:
+			return -1
+		else:
+			return 1
 
 def getTransitionProbability(i, j, hmm):
 	key = 10*i+j

@@ -9,17 +9,17 @@ for i in m:
 	for j in m:
 		#print str(i)+"\t/\t"+str(j)+"\t=",
 		result = a.divideProbability(i, j)
-		check1 = get(i)-get(j)
-		check2 = get(result)
-		if round(check1, 8)==round(check2,8):
-			print True
-		else:
-			print i,
-			print j,
-			print result
-
-			print check1,
-			print check2
-		result = a.addProbability(i, j)
-		print str(i)+"\t+\t"+str(j)+"\t=",
+		#check1 = get(i)-get(j)
+		#check2 = get(result)
+		#if round(check1, 8)==round(check2,8):
+		#	print True
+		#else:
+		#	print i,
+		#	print j,
+		#	print result
+#
+#			print check1,
+#			print check2
+		result = a.getMaxProbability(i, j)
+		print str(i)+"\t \t"+str(j)+"\t=",
 		print result

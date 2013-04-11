@@ -5,7 +5,7 @@ import checker
 
 hmm = HMM.getHMM()
 
-data = [line.strip() for line in open("../data/train.txt")][0]
+data = [line.strip() for line in open("../data/trainnew.txt")][0]
 
 def getXi(data, hmm):
 	alpha = a.forward(data, hmm)
@@ -87,7 +87,7 @@ def reEstimation(xi, data):
 def train(data, hmm):
 	change=1
 	Avgll=a.getAvgLL(data, hmm)
-	while change >1e-7:
+	while change >1e-4:
 		avgll=Avgll
 		xi=getXi(data, hmm)
 		hmm=reEstimation(xi, data)
@@ -106,9 +106,9 @@ def train(data, hmm):
 	print '-----------------'
 	return hmm
 def run(data):
-	#hmm=r.randomHmm()
-	hmm=HMM.getHMM()
+	hmm=r.randomHmm()
+	#hmm=HMM.getHMM()
 	hmm=train(data, hmm)
 
-#for i in range(10):
-run(data)
+for i in range(10):
+	run(data)
